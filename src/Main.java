@@ -1,4 +1,6 @@
+import java.io.*;
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * Clase Main
@@ -35,6 +37,7 @@ public class Main {
         // variables
         boolean noJugar, salir;
         int numeroPreguntasUsuario, aciertos, fallos;
+        String nombre;
         int[] preguntasElegidas;
 
         salir = false;
@@ -43,16 +46,24 @@ public class Main {
         // Si el usuario responde que no quiere jugar se mostrara un mensaje y se cerrara el programa
         if (!noJugar) {
             while (!salir) {
+                nombre = askName();
                 numeroPreguntasUsuario = preguntarNumero();
                 preguntasElegidas = elegirPreguntas(numeroPreguntasUsuario);
                 reglas();
                 aciertos = jugar(preguntasElegidas, preguntas, posiblesRespuestas, respuestasCorrectas);
                 fallos = numeroPreguntasUsuario - aciertos; // Se calcula el numero de fallos para mostrarselo al usuario
-                salir = cerrarJuego(aciertos, fallos, numeroPreguntasUsuario);
+                salir = cerrarJuego(aciertos, fallos, numeroPreguntasUsuario, nombre);
             }
         }else {
             System.out.println("Well maybe next time");
         }
+    }
+
+    private static String askName() {
+
+        System.out.println("Enter your name");
+
+        return ToolsBrito.leerString();
     }
 
     /**
@@ -62,26 +73,23 @@ public class Main {
      */
     private static char[] respuestasCorrectas() {
         char[] respuestas = new char[NUMERO_PREGUNTAS];
-        respuestas[0] = 'c';
-        respuestas[1] = 'b';
-        respuestas[2] = 'b';
-        respuestas[3] = 'a';
-        respuestas[4] = 'a';
-        respuestas[5] = 'b';
-        respuestas[6] = 'a';
-        respuestas[7] = 'c';
-        respuestas[8] = 'b';
-        respuestas[9] = 'a';
-        respuestas[10] = 'c';
-        respuestas[11] = 'c';
-        respuestas[12] = 'c';
-        respuestas[13] = 'a';
-        respuestas[14] = 'c';
-        respuestas[15] = 'b';
-        respuestas[16] = 'a';
-        respuestas[17] = 'b';
-        respuestas[18] = 'c';
-        respuestas[19] = 'a';
+
+        String fileName = "src/resources/respuestas.txt";
+        String line;
+        int i = 0;
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
+
+            while ( (line = bufferedReader.readLine()) != null){
+                respuestas[i] = line.charAt(0);
+                i++;
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println("THE FILE WAS NOT FOUND");
+        } catch (IOException e) {
+            System.out.println("THERE WAS AN ERROR DURING READING THE FILE");
+        }
 
         return respuestas;
     }
@@ -93,26 +101,23 @@ public class Main {
      */
     private static String[] posiblesRespuestas() {
         String[] posiblesRespuestas = new String[NUMERO_PREGUNTAS];
-        posiblesRespuestas[0] = "a. echo(\"Hello World\");\nb. print (\"Hello World\");\nc. System.out.println(\"Hello World\");";
-        posiblesRespuestas[1] = "a. /* This is a comment\nb. // This is a comment\nc. # This is a comment";
-        posiblesRespuestas[2] = "a. string\nb. String\nc. Txt";
-        posiblesRespuestas[3] = "a. int x = 5;\nb. float x = 5\nc. num x = 5";
-        posiblesRespuestas[4] = "a. length()\nb. len()\nc. getLength()";
-        posiblesRespuestas[5] = "a. The * sign\nb. The + sign";
-        posiblesRespuestas[6] = "a. False\nb. True";
-        posiblesRespuestas[7] = "a. touppercase()\nb. upperCase()\nc. toUpperCase()";
-        posiblesRespuestas[8] = "a. {}\nb. []";
-        posiblesRespuestas[9] = "a. 0\nb. 1";
-        posiblesRespuestas[10] = "a. x\nb. %.\nc. *";
-        posiblesRespuestas[11] = "a. if x > y then:\nb. if x > y:\nc. if (x > y)";
-        posiblesRespuestas[12] = "a. while x > y:\nb. while x > y {\nc. while (x > y)";
-        posiblesRespuestas[13] = "a. return\nb. get\nc. void";
-        posiblesRespuestas[14] = "a. (methodName)\nb. methodName[]\nc. methodName()";
-        posiblesRespuestas[15] = "a. methodName;\nb. methodName();\nc. methodName[];";
-        posiblesRespuestas[16] = "a. ==\nb. =\nc. ><";
-        posiblesRespuestas[17] = "a. for\nb. while\nc. do-while";
-        posiblesRespuestas[18] = "a. While\nb. do-while\nc. for";
-        posiblesRespuestas[19] = "a. toLowerCase()\nb. tolowercase()\nc. low()";
+
+        String fileName = "src/resources/posibilidades.txt";
+        String line;
+        int i = 0;
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
+
+            while ( (line = bufferedReader.readLine()) != null){
+                posiblesRespuestas[i] = line;
+                i++;
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println("THE FILE WAS NOT FOUND");
+        } catch (IOException e) {
+            System.out.println("THERE WAS AN ERROR DURING READING THE FILE");
+        }
 
         return posiblesRespuestas;
     }
@@ -124,26 +129,22 @@ public class Main {
      */
     private static String[] preguntas() {
         String[] preguntas = new String[NUMERO_PREGUNTAS];
-        preguntas[0] = "What is a correct syntax to output \"Hello World\" in Java?";
-        preguntas[1] = "How do you insert COMMENTS in Java code?";
-        preguntas[2] = "Which data type is used to create a variable that should store text?";
-        preguntas[3] = "How do you create a variable with the numeric value 5?";
-        preguntas[4] = "Which method can be used to find the length of a string?";
-        preguntas[5] = "Which operator is used to add together two values?";
-        preguntas[6] = "The value of a string variable can be surrounded by single quotes.";
-        preguntas[7] = "Which method can be used to return a string in upper case letters?";
-        preguntas[8] = "To declare an array in Java, define the variable type with:";
-        preguntas[9] = "Array indexes start with:";
-        preguntas[10] = "Which operator is used to multiply numbers?";
-        preguntas[11] = "How do you start writing an if statement in Java?";
-        preguntas[12] = "How do you start writing a while loop in Java?";
-        preguntas[13] = "Which keyword is used to return a value inside a method?";
-        preguntas[14] = "How do you create a method in Java?";
-        preguntas[15] = "How do you call a method in Java?";
-        preguntas[16] = "Which operator can be used to compare two values?";
-        preguntas[17] = "Which of the following loops can contain code that may never be executed:";
-        preguntas[18] = "Which of the following loops is separated in three parts: initialization, condition and increment?";
-        preguntas[19] = "Which method can be used to return a string in lower case letters?";
+        String fileName = "src/resources/preguntas.txt";
+        String line;
+        int i = 0;
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
+
+            while ( (line = bufferedReader.readLine()) != null){
+                preguntas[i] = line;
+                i++;
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println("THE FILE WAS NOT FOUND");
+        } catch (IOException e) {
+            System.out.println("THERE WAS AN ERROR DURING READING THE FILE");
+        }
 
         return preguntas;
     }
@@ -174,7 +175,7 @@ public class Main {
         for (int i = 0; i < preguntasElegidas.length && !salir; i++) {
             System.out.println(contador + ". " + preguntas[preguntasElegidas[i]]);
             System.out.println(posiblesRespuestas[preguntasElegidas[i]]);
-            respuesta = teclat.Teclat.llegirChar();
+            respuesta = ToolsBrito.leerChar();
             if(respuesta >= 'A' && respuesta <= 'Z') {              // CONVIERTE CHAR EN MINUSCULAS
                 respuesta = (char) (respuesta + 32);
             }
@@ -208,12 +209,12 @@ public class Main {
         repetirReglas = false;
         while (!salir) {
             System.out.println("Do u wanna see the rules?");
-            verReglas = teclat.Teclat.llegirString();
+            verReglas = ToolsBrito.leerString();
             if (verReglas.equalsIgnoreCase("yes")) {
                 do {
                     System.out.println("Basically you will see one question with diverse options and you need to put the right option below.\nYour results will be shown at the end, but if you fail more than 3 questions on a row you will instantly lose");
                     System.out.println("Did you understand everything?");
-                    verReglas = teclat.Teclat.llegirString();
+                    verReglas = ToolsBrito.leerString();
                     if (verReglas.equalsIgnoreCase("yes")) {
                         System.out.println("Then let's start");
                         salir = true;
@@ -246,7 +247,7 @@ public class Main {
 
         do {
             System.out.println("How many questions do you wanna try?");
-            numeroPreguntas = teclat.Teclat.llegirInt();
+            numeroPreguntas = ToolsBrito.leerInt();
             if (numeroPreguntas < 5 || numeroPreguntas > 20){
                 System.out.println("ERROR!!!\nPlease choose a value between 5 and 20");
             }else {
@@ -293,13 +294,14 @@ public class Main {
     /**
      * Metodo que muestra los resultados finales y pregunta al usuario si quiere jugar otra vez
      *
-     * @param aciertos cantidad de aciertos
-     * @param fallos cantidad de preguntas fallidas
+     * @param aciertos               cantidad de aciertos
+     * @param fallos                 cantidad de preguntas fallidas
      * @param numeroPreguntasUsuario El numero de preguntas totales que se iban a hacer
+     * @param nombre
      * @return Un boolean segun la respuesta del usuario para jugar otra vez o no
      */
 
-    private static boolean cerrarJuego(int aciertos, int fallos, int numeroPreguntasUsuario) {
+    private static boolean cerrarJuego(int aciertos, int fallos, int numeroPreguntasUsuario, String nombre) {
         double porcentaje;
         boolean salir, cerrar;
         String respuesta;
@@ -320,7 +322,7 @@ public class Main {
         }
         while (!cerrar){
             System.out.println("Do you wanna play again");
-            respuesta = teclat.Teclat.llegirString();
+            respuesta = ToolsBrito.leerString();
             if (respuesta.equalsIgnoreCase("yes")){
                 System.out.println("Until next time.");
                 cerrar = true;
@@ -331,7 +333,21 @@ public class Main {
                 System.out.println(MENSAJE_ERROR);
             }
         }
+        saveData(nombre, aciertos, fallos);
         return salir;
+    }
+
+    private static void saveData(String nombre, int aciertos, int fallos) {
+        Date fechaActual = new Date();
+        String line = nombre + ';' + aciertos + ';' + fallos + ';' + fechaActual;
+        File fileName = new File("src/resources/datos.txt");
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName.getAbsoluteFile(), true))){
+            bw.write(line);
+            bw.write(System.lineSeparator());
+        } catch (IOException e) {
+            System.out.println("AN ERROR HAS OCURRED");
+        }
     }
 
     /**
@@ -348,7 +364,7 @@ public class Main {
         noJugar = false;
         while (!salir) {
             System.out.println("Do you wanna play a quiz about java?");
-            jugar = teclat.Teclat.llegirString();
+            jugar = ToolsBrito.leerString();
             if (jugar.equalsIgnoreCase("yes")) {
                 salir = true;
             } else if (jugar.equalsIgnoreCase("no")) {
